@@ -1,0 +1,18 @@
+{
+    "name": "@nteeeeed/react-multilang-menu",
+    "version": "0.1.0",
+    "description": "React Multilang Menu",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "test": "echo \"No test specified\"",
+        "prepare": "tsc"
+    },
+    "keywords": [],
+    "author": "Nikolas Heidner <nteeeeed@gamil.com>",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/react": "^16.9.35",
+        "react": "^16.13.1"
+    }
+}
