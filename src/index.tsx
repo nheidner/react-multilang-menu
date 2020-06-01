@@ -1,11 +1,4 @@
-import React, {
-    FC,
-    ReactElement,
-    ReactNode,
-    useState,
-    useEffect,
-    useRef,
-} from 'react';
+import React, { FC, ReactElement, ReactNode } from 'react';
 import matchPaths from './matchPaths';
 
 export interface IMenuItem {
@@ -50,68 +43,53 @@ const returnEmptyMenuItemsWithActiveField = () => {
     );
 };
 
-const useHover = (): [
-    React.MutableRefObject<HTMLDivElement | null>,
-    boolean
-] => {
-    const [value, setValue] = useState(false);
+class NavListItem extends React.Component<
+    {
+        menuItem: MenuItemWithActiveField;
+        activeLocale: string;
+        Link: ILink;
+        primaryLocale: string;
+    },
+    {
+        isHovered: boolean;
+    }
+> {
+    state = {
+        isHovered: false,
+    };
 
-    const ref = useRef<HTMLDivElement | null>(null);
+    onMouseOver = () => this.setState({ isHovered: true });
 
-    const handleMouseOver = () => setValue(true);
-    const handleMouseOut = () => setValue(false);
+    onMouseOut = () => this.setState({ isHovered: false });
 
-    useEffect(
-        () => {
-            const node = ref.current;
-            if (node) {
-                node.addEventListener('mouseover', handleMouseOver);
-                node.addEventListener('mouseout', handleMouseOut);
-
-                return () => {
-                    node.removeEventListener('mouseover', handleMouseOver);
-                    node.removeEventListener('mouseout', handleMouseOut);
-                };
-            }
-        },
-        [ref.current] // Recall only if ref changes
-    );
-
-    return [ref, value];
-};
-
-const NavListItem: FC<{
-    menuItem: MenuItemWithActiveField;
-    activeLocale: string;
-    Link: ILink;
-    primaryLocale: string;
-}> = ({ menuItem, Link, activeLocale, primaryLocale }) => {
-    const [hoverRef, isHovered] = useHover();
-
-    return (
-        <li
-            className={`${menuItem.active ? 'active ' : ''}${
-                menuItem.partlyActive ? 'partlyActive' : ''
-            }`}>
-            <Link
-                ref={hoverRef}
-                to={`${
-                    activeLocale === primaryLocale ? '' : '' + activeLocale
-                }${menuItem.to}`}
-                className={isHovered ? 'onHover' : ''}>
-                {menuItem.item[activeLocale]}
-            </Link>
-            {menuItem.children && (
-                <NavList
-                    menuItemsWithActiveField={menuItem.children}
-                    activeLocale={activeLocale}
-                    Link={Link}
-                    primaryLocale={primaryLocale}
-                />
-            )}
-        </li>
-    );
-};
+    render() {
+        const { menuItem, Link, activeLocale, primaryLocale } = this.props;
+        return (
+            <li
+                className={`${menuItem.active ? 'active ' : ''}${
+                    menuItem.partlyActive ? 'partlyActive' : ''
+                }`}>
+                <Link
+                    to={`${
+                        activeLocale === primaryLocale ? '' : '' + activeLocale
+                    }${menuItem.to}`}
+                    onMouseOver={this.onMouseOver}
+                    onMouseOut={this.onMouseOut}
+                    className={this.state.isHovered ? 'onHover' : ''}>
+                    {menuItem.item[activeLocale]}
+                </Link>
+                {menuItem.children && (
+                    <NavList
+                        menuItemsWithActiveField={menuItem.children}
+                        activeLocale={activeLocale}
+                        Link={Link}
+                        primaryLocale={primaryLocale}
+                    />
+                )}
+            </li>
+        );
+    }
+}
 
 const NavList: FC<{
     menuItemsWithActiveField: MenuItemWithActiveField[];
