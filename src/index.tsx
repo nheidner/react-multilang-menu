@@ -67,15 +67,14 @@ class NavListItem extends React.Component<
         return (
             <li
                 className={`${menuItem.active ? 'active ' : ''}${
-                    menuItem.partlyActive ? 'partlyActive' : ''
-                }`}>
+                    menuItem.partlyActive ? 'partlyActive ' : ''
+                }${this.state.isHovered ? 'onHover' : ''}`}
+                onMouseOver={this.onMouseOver}
+                onMouseOut={this.onMouseOut}>
                 <Link
                     to={`${
                         activeLocale === primaryLocale ? '' : '' + activeLocale
-                    }${menuItem.to}`}
-                    onMouseOver={this.onMouseOver}
-                    onMouseOut={this.onMouseOut}
-                    className={this.state.isHovered ? 'onHover' : ''}>
+                    }${menuItem.to}`}>
                     {menuItem.item[activeLocale]}
                 </Link>
                 {menuItem.children && (
