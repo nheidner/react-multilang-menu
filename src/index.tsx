@@ -1,7 +1,7 @@
 import React, { FC, ReactElement, ReactNode } from 'react';
 import matchPaths from './matchPaths';
 
-interface IMenuItem {
+export interface IMenuItem {
     item: {
         en: string;
         de: string;
@@ -25,7 +25,7 @@ class MenuItemWithActiveField {
     ) {}
 }
 
-interface ILink {
+export interface ILink {
     (props: {
         children: ReactNode;
         to: string;
