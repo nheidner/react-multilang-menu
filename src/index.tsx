@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, ReactElement, ReactNode } from 'react';
 import matchPaths from './matchPaths';
 
 interface IMenuItem {
@@ -25,6 +25,14 @@ class MenuItemWithActiveField {
     ) {}
 }
 
+interface ILink {
+    (props: {
+        children: ReactNode;
+        to: string;
+        [otherParams: string]: any;
+    }): ReactElement;
+}
+
 const returnEmptyMenuItemsWithActiveField = () => {
     return new MenuItemWithActiveField(
         { en: '', de: '' },
@@ -37,8 +45,10 @@ const returnEmptyMenuItemsWithActiveField = () => {
 
 const NavList: FC<{
     menuItemsWithActiveField: MenuItemWithActiveField[];
-    currentLocale: string;
-}> = ({ menuItemsWithActiveField, currentLocale }) => {
+    activeLocale: string;
+    Link: ILink;
+    primaryLocale: string;
+}> = ({ menuItemsWithActiveField, activeLocale, Link, primaryLocale }) => {
     return (
         <ul>
             {menuItemsWithActiveField.map((menuItem, index) => {
@@ -48,16 +58,20 @@ const NavList: FC<{
                         className={`${menuItem.active ? 'active' : ''}${
                             menuItem.partlyActive ? ' partlyActive' : ''
                         }`}>
-                        <a
-                            href={`${
-                                currentLocale === 'en' ? '' : '' + currentLocale
+                        <Link
+                            to={`${
+                                activeLocale === primaryLocale
+                                    ? ''
+                                    : '' + activeLocale
                             }${menuItem.to}`}>
-                            {menuItem.item[currentLocale]}
-                        </a>
+                            {menuItem.item[activeLocale]}
+                        </Link>
                         {menuItem.children && (
                             <NavList
                                 menuItemsWithActiveField={menuItem.children}
-                                currentLocale={currentLocale}
+                                activeLocale={activeLocale}
+                                Link={Link}
+                                primaryLocale={primaryLocale}
                             />
                         )}
                     </li>
@@ -129,8 +143,16 @@ const addActiveFields = (
 const Menu: FC<{
     menuItems: IMenuItem[];
     activeLocale: string;
+    primaryLocale: string;
     activePathWithoutLocale: string;
-}> = ({ menuItems, activeLocale, activePathWithoutLocale }) => {
+    Link: ILink;
+}> = ({
+    menuItems,
+    activeLocale,
+    primaryLocale,
+    activePathWithoutLocale,
+    Link,
+}) => {
     const { menuItemsWithActiveField } = addActiveFields(menuItems);
     const { menuItemsWithActivePaths } = checkforActivePaths(
         menuItemsWithActiveField,
@@ -141,7 +163,9 @@ const Menu: FC<{
         <>
             <NavList
                 menuItemsWithActiveField={menuItemsWithActivePaths}
-                currentLocale={activeLocale}
+                activeLocale={activeLocale}
+                Link={Link}
+                primaryLocale={primaryLocale}
             />
         </>
     );
