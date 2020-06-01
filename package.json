@@ -12,7 +12,9 @@
     "author": "Nikolas Heidner <nteeeeed@gamil.com>",
     "license": "ISC",
     "devDependencies": {
-        "@types/react": "^16.9.35",
+        "@types/react": "^16.9.35"
+    },
+    "peerDependencies": {
         "react": "^16.13.1"
     }
 }

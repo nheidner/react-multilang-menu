@@ -1,4 +1,11 @@
-import React, { FC, ReactElement, ReactNode, useState } from 'react';
+import React, {
+    FC,
+    ReactElement,
+    ReactNode,
+    useState,
+    useEffect,
+    useRef,
+} from 'react';
 import matchPaths from './matchPaths';
 
 export interface IMenuItem {
@@ -43,25 +50,55 @@ const returnEmptyMenuItemsWithActiveField = () => {
     );
 };
 
+const useHover = (): [
+    React.MutableRefObject<HTMLDivElement | null>,
+    boolean
+] => {
+    const [value, setValue] = useState(false);
+
+    const ref = useRef<HTMLDivElement | null>(null);
+
+    const handleMouseOver = () => setValue(true);
+    const handleMouseOut = () => setValue(false);
+
+    useEffect(
+        () => {
+            const node = ref.current;
+            if (node) {
+                node.addEventListener('mouseover', handleMouseOver);
+                node.addEventListener('mouseout', handleMouseOut);
+
+                return () => {
+                    node.removeEventListener('mouseover', handleMouseOver);
+                    node.removeEventListener('mouseout', handleMouseOut);
+                };
+            }
+        },
+        [ref.current] // Recall only if ref changes
+    );
+
+    return [ref, value];
+};
+
 const NavListItem: FC<{
     menuItem: MenuItemWithActiveField;
     activeLocale: string;
     Link: ILink;
     primaryLocale: string;
 }> = ({ menuItem, Link, activeLocale, primaryLocale }) => {
-    const [showSubList, setShowSubList] = useState(false);
+    const [hoverRef, isHovered] = useHover();
 
     return (
         <li
             className={`${menuItem.active ? 'active ' : ''}${
-                menuItem.partlyActive ? 'partlyActive ' : ''
-            }${showSubList ? 'onHover ' : ''}`}
-            onMouseOver={() => setShowSubList(true)}
-            onMouseOut={() => setShowSubList(false)}>
+                menuItem.partlyActive ? 'partlyActive' : ''
+            }`}>
             <Link
+                ref={hoverRef}
                 to={`${
                     activeLocale === primaryLocale ? '' : '' + activeLocale
-                }${menuItem.to}`}>
+                }${menuItem.to}`}
+                className={isHovered ? 'onHover' : ''}>
                 {menuItem.item[activeLocale]}
             </Link>
             {menuItem.children && (
