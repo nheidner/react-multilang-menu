@@ -1,4 +1,4 @@
-import React, { FC, ReactElement, ReactNode } from 'react';
+import React, { FC, ReactElement, ReactNode, useState } from 'react';
 import matchPaths from './matchPaths';
 
 export interface IMenuItem {
@@ -43,6 +43,39 @@ const returnEmptyMenuItemsWithActiveField = () => {
     );
 };
 
+const NavListItem: FC<{
+    menuItem: MenuItemWithActiveField;
+    activeLocale: string;
+    Link: ILink;
+    primaryLocale: string;
+}> = ({ menuItem, Link, activeLocale, primaryLocale }) => {
+    const [showSubList, setShowSubList] = useState(false);
+
+    return (
+        <li
+            className={`${menuItem.active ? 'active ' : ''}${
+                menuItem.partlyActive ? 'partlyActive ' : ''
+            }${showSubList ? 'onHover ' : ''}`}
+            onMouseOver={() => setShowSubList(true)}
+            onMouseOut={() => setShowSubList(false)}>
+            <Link
+                to={`${
+                    activeLocale === primaryLocale ? '' : '' + activeLocale
+                }${menuItem.to}`}>
+                {menuItem.item[activeLocale]}
+            </Link>
+            {menuItem.children && (
+                <NavList
+                    menuItemsWithActiveField={menuItem.children}
+                    activeLocale={activeLocale}
+                    Link={Link}
+                    primaryLocale={primaryLocale}
+                />
+            )}
+        </li>
+    );
+};
+
 const NavList: FC<{
     menuItemsWithActiveField: MenuItemWithActiveField[];
     activeLocale: string;
@@ -53,28 +86,13 @@ const NavList: FC<{
         <ul>
             {menuItemsWithActiveField.map((menuItem, index) => {
                 return (
-                    <li
+                    <NavListItem
                         key={index}
-                        className={`${menuItem.active ? 'active' : ''}${
-                            menuItem.partlyActive ? ' partlyActive' : ''
-                        }`}>
-                        <Link
-                            to={`${
-                                activeLocale === primaryLocale
-                                    ? ''
-                                    : '' + activeLocale
-                            }${menuItem.to}`}>
-                            {menuItem.item[activeLocale]}
-                        </Link>
-                        {menuItem.children && (
-                            <NavList
-                                menuItemsWithActiveField={menuItem.children}
-                                activeLocale={activeLocale}
-                                Link={Link}
-                                primaryLocale={primaryLocale}
-                            />
-                        )}
-                    </li>
+                        menuItem={menuItem}
+                        activeLocale={activeLocale}
+                        Link={Link}
+                        primaryLocale={primaryLocale}
+                    />
                 );
             })}
         </ul>
