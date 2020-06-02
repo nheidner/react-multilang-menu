@@ -84,8 +84,8 @@ class NavListItem extends React.Component<
                 className={`${menuItem.active ? 'active' : ''} ${
                     menuItem.partlyActive ? 'partlyActive' : ''
                 } ${this.state.isHovered ? 'onHover' : ''} ${
-                    menuItem.children.length > 0 ? 'hasSubList' : ''
-                }`}
+                    this.state.isClicked ? 'isClicked' : ''
+                }${menuItem.children.length > 0 ? 'hasSubList' : ''}`}
                 onMouseOver={this.onMouseOver}
                 onMouseOut={this.onMouseOut}>
                 <Link
