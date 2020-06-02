@@ -77,9 +77,9 @@ class NavListItem extends React.Component<
         } = this.props;
         return (
             <li
-                className={`${menuItem.active ? 'active ' : ''}${
-                    menuItem.partlyActive ? 'partlyActive ' : ''
-                }${this.state.isHovered ? 'onHover ' : ''}${
+                className={`${menuItem.active ? 'active' : ''} ${
+                    menuItem.partlyActive ? 'partlyActive' : ''
+                } ${this.state.isHovered ? 'onHover' : ''} ${
                     menuItem.children.length > 0 ? 'hasSubList' : ''
                 }`}
                 onMouseOver={this.onMouseOver}
@@ -128,7 +128,7 @@ const NavList: FC<{
     level,
 }) => {
     return (
-        <ul className={`level${level}`}>
+        <ul className={`level${level} ${level === 0 ? 'menu' : ''}`}>
             {menuItemsWithActiveField.map((menuItem, index) => {
                 return (
                     <NavListItem
@@ -227,16 +227,14 @@ const Menu: FC<{
     );
 
     return (
-        <div className='menu'>
-            <NavList
-                menuItemsWithActiveField={menuItemsWithActivePaths}
-                activeLocale={activeLocale}
-                Link={Link}
-                primaryLocale={primaryLocale}
-                DropdownCarret={DropdownCarret}
-                level={0}
-            />
-        </div>
+        <NavList
+            menuItemsWithActiveField={menuItemsWithActivePaths}
+            activeLocale={activeLocale}
+            Link={Link}
+            primaryLocale={primaryLocale}
+            DropdownCarret={DropdownCarret}
+            level={0}
+        />
     );
 };
 
