@@ -82,11 +82,11 @@ class NavListItem extends React.Component<
                 onMouseOut={this.onMouseOut}>
                 <Link to={`${menuItem.to}`}>
                     {menuItem.item[activeLocale]}
-                    {menuItem.children && (
+                    {menuItem.children.length > 0 && (
                         <DropdownCarret active={this.state.isHovered} />
                     )}
                 </Link>
-                {menuItem.children && (
+                {menuItem.children.length > 0 && (
                     <NavList
                         menuItemsWithActiveField={menuItem.children}
                         activeLocale={activeLocale}
