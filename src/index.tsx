@@ -56,15 +56,19 @@ class NavListItem extends React.Component<
     },
     {
         isHovered: boolean;
+        isClicked: boolean;
     }
 > {
     state = {
         isHovered: false,
+        isClicked: false,
     };
 
     onMouseOver = () => this.setState({ isHovered: true });
 
     onMouseOut = () => this.setState({ isHovered: false });
+
+    onClick = () => this.setState({ isClicked: !this.state.isClicked });
 
     render() {
         const {
@@ -85,6 +89,7 @@ class NavListItem extends React.Component<
                 onMouseOver={this.onMouseOver}
                 onMouseOut={this.onMouseOut}>
                 <Link
+                    onClick={this.onClick}
                     to={`${
                         activeLocale === primaryLocale ? '' : '/' + activeLocale
                     }${menuItem.to}`}>
