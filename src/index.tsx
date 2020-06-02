@@ -11,6 +11,16 @@ export interface IMenuItem {
     children?: IMenuItem[];
 }
 
+export interface ILink {
+    (props: {
+        children: ReactNode;
+        to: string;
+        [otherParams: string]: any;
+    }): ReactElement;
+}
+
+export type IDropdownCarret = FC<{ active: boolean }>;
+
 class MenuItemWithActiveField {
     constructor(
         public item: {
@@ -23,14 +33,6 @@ class MenuItemWithActiveField {
         public partlyActive: boolean,
         public active: boolean
     ) {}
-}
-
-export interface ILink {
-    (props: {
-        children: ReactNode;
-        to: string;
-        [otherParams: string]: any;
-    }): ReactElement;
 }
 
 const returnEmptyMenuItemsWithActiveField = () => {
@@ -49,6 +51,7 @@ class NavListItem extends React.Component<
         activeLocale: string;
         Link: ILink;
         primaryLocale: string;
+        DropdownCarret: IDropdownCarret;
     },
     {
         isHovered: boolean;
@@ -63,7 +66,13 @@ class NavListItem extends React.Component<
     onMouseOut = () => this.setState({ isHovered: false });
 
     render() {
-        const { menuItem, Link, activeLocale, primaryLocale } = this.props;
+        const {
+            menuItem,
+            Link,
+            activeLocale,
+            primaryLocale,
+            DropdownCarret,
+        } = this.props;
         return (
             <li
                 className={`${menuItem.active ? 'active ' : ''}${
@@ -71,11 +80,9 @@ class NavListItem extends React.Component<
                 }${this.state.isHovered ? 'onHover' : ''}`}
                 onMouseOver={this.onMouseOver}
                 onMouseOut={this.onMouseOut}>
-                <Link
-                    to={`${
-                        activeLocale === primaryLocale ? '' : '' + activeLocale
-                    }${menuItem.to}`}>
+                <Link to={`${menuItem.to}`}>
                     {menuItem.item[activeLocale]}
+                    <DropdownCarret active={this.state.isHovered} />
                 </Link>
                 {menuItem.children && (
                     <NavList
@@ -83,6 +90,7 @@ class NavListItem extends React.Component<
                         activeLocale={activeLocale}
                         Link={Link}
                         primaryLocale={primaryLocale}
+                        DropdownCarret={DropdownCarret}
                     />
                 )}
             </li>
@@ -95,7 +103,14 @@ const NavList: FC<{
     activeLocale: string;
     Link: ILink;
     primaryLocale: string;
-}> = ({ menuItemsWithActiveField, activeLocale, Link, primaryLocale }) => {
+    DropdownCarret: IDropdownCarret;
+}> = ({
+    menuItemsWithActiveField,
+    activeLocale,
+    Link,
+    primaryLocale,
+    DropdownCarret,
+}) => {
     return (
         <ul>
             {menuItemsWithActiveField.map((menuItem, index) => {
@@ -106,6 +121,7 @@ const NavList: FC<{
                         activeLocale={activeLocale}
                         Link={Link}
                         primaryLocale={primaryLocale}
+                        DropdownCarret={DropdownCarret}
                     />
                 );
             })}
@@ -178,12 +194,14 @@ const Menu: FC<{
     primaryLocale: string;
     activePathWithoutLocale: string;
     Link: ILink;
+    DropdownCarret: IDropdownCarret;
 }> = ({
     menuItems,
     activeLocale,
     primaryLocale,
     activePathWithoutLocale,
     Link,
+    DropdownCarret,
 }) => {
     const { menuItemsWithActiveField } = addActiveFields(menuItems);
     const { menuItemsWithActivePaths } = checkforActivePaths(
@@ -192,14 +210,15 @@ const Menu: FC<{
     );
 
     return (
-        <>
+        <div className='menu'>
             <NavList
                 menuItemsWithActiveField={menuItemsWithActivePaths}
                 activeLocale={activeLocale}
                 Link={Link}
                 primaryLocale={primaryLocale}
+                DropdownCarret={DropdownCarret}
             />
-        </>
+        </div>
     );
 };
 
