@@ -120,6 +120,7 @@ const NavList: FC<{
     DropdownCarret: IDropdownCarret;
     level: number;
     classNameForTopElement?: string;
+    showMenu?: boolean;
 }> = ({
     menuItemsWithActiveField,
     activeLocale,
@@ -128,12 +129,15 @@ const NavList: FC<{
     DropdownCarret,
     level,
     classNameForTopElement,
+    showMenu,
 }) => {
     return (
         <ul
             className={`level${level} ${
-                level === 0 ? classNameForTopElement : ''
-            }`}>
+                level === 0 && classNameForTopElement
+                    ? classNameForTopElement
+                    : ''
+            } ${showMenu ? 'showMenu' : ''}`}>
             {menuItemsWithActiveField.map((menuItem, index) => {
                 return (
                     <NavListItem
@@ -218,6 +222,7 @@ const Menu: FC<{
     Link: ILink;
     DropdownCarret: IDropdownCarret;
     classNameForTopElement: string;
+    showMenu?: boolean;
 }> = ({
     menuItems,
     activeLocale,
@@ -226,6 +231,7 @@ const Menu: FC<{
     Link,
     DropdownCarret,
     classNameForTopElement,
+    showMenu,
 }) => {
     const { menuItemsWithActiveField } = addActiveFields(menuItems);
     const { menuItemsWithActivePaths } = checkforActivePaths(
@@ -242,6 +248,7 @@ const Menu: FC<{
             DropdownCarret={DropdownCarret}
             level={0}
             classNameForTopElement={classNameForTopElement}
+            showMenu={showMenu}
         />
     );
 };
