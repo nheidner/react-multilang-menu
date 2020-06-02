@@ -119,6 +119,7 @@ const NavList: FC<{
     primaryLocale: string;
     DropdownCarret: IDropdownCarret;
     level: number;
+    classNameForTopElement?: string;
 }> = ({
     menuItemsWithActiveField,
     activeLocale,
@@ -126,9 +127,13 @@ const NavList: FC<{
     primaryLocale,
     DropdownCarret,
     level,
+    classNameForTopElement,
 }) => {
     return (
-        <ul className={`level${level} ${level === 0 ? 'menu' : ''}`}>
+        <ul
+            className={`level${level} ${
+                level === 0 ? classNameForTopElement : ''
+            }`}>
             {menuItemsWithActiveField.map((menuItem, index) => {
                 return (
                     <NavListItem
@@ -212,6 +217,7 @@ const Menu: FC<{
     activePathWithoutLocale: string;
     Link: ILink;
     DropdownCarret: IDropdownCarret;
+    classNameForTopElement: string;
 }> = ({
     menuItems,
     activeLocale,
@@ -219,6 +225,7 @@ const Menu: FC<{
     activePathWithoutLocale,
     Link,
     DropdownCarret,
+    classNameForTopElement,
 }) => {
     const { menuItemsWithActiveField } = addActiveFields(menuItems);
     const { menuItemsWithActivePaths } = checkforActivePaths(
@@ -234,6 +241,7 @@ const Menu: FC<{
             primaryLocale={primaryLocale}
             DropdownCarret={DropdownCarret}
             level={0}
+            classNameForTopElement={classNameForTopElement}
         />
     );
 };
