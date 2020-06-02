@@ -52,6 +52,7 @@ class NavListItem extends React.Component<
         Link: ILink;
         primaryLocale: string;
         DropdownCarret: IDropdownCarret;
+        level: number;
     },
     {
         isHovered: boolean;
@@ -72,6 +73,7 @@ class NavListItem extends React.Component<
             activeLocale,
             primaryLocale,
             DropdownCarret,
+            level,
         } = this.props;
         return (
             <li
@@ -83,7 +85,11 @@ class NavListItem extends React.Component<
                 <Link to={`${menuItem.to}`}>
                     {menuItem.item[activeLocale]}
                     {menuItem.children.length > 0 && (
-                        <DropdownCarret active={this.state.isHovered} />
+                        <DropdownCarret
+                            active={
+                                this.state.isHovered || menuItem.partlyActive
+                            }
+                        />
                     )}
                 </Link>
                 {menuItem.children.length > 0 && (
@@ -93,6 +99,7 @@ class NavListItem extends React.Component<
                         Link={Link}
                         primaryLocale={primaryLocale}
                         DropdownCarret={DropdownCarret}
+                        level={level + 1}
                     />
                 )}
             </li>
@@ -106,15 +113,17 @@ const NavList: FC<{
     Link: ILink;
     primaryLocale: string;
     DropdownCarret: IDropdownCarret;
+    level: number;
 }> = ({
     menuItemsWithActiveField,
     activeLocale,
     Link,
     primaryLocale,
     DropdownCarret,
+    level,
 }) => {
     return (
-        <ul>
+        <ul className={`level${level}`}>
             {menuItemsWithActiveField.map((menuItem, index) => {
                 return (
                     <NavListItem
@@ -124,6 +133,7 @@ const NavList: FC<{
                         Link={Link}
                         primaryLocale={primaryLocale}
                         DropdownCarret={DropdownCarret}
+                        level={level}
                     />
                 );
             })}
@@ -219,6 +229,7 @@ const Menu: FC<{
                 Link={Link}
                 primaryLocale={primaryLocale}
                 DropdownCarret={DropdownCarret}
+                level={0}
             />
         </div>
     );
