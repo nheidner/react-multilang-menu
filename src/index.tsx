@@ -22,28 +22,40 @@ export interface ILink {
 export type IDropdownCarret = FC<{ active: boolean }>;
 
 class MenuItemWithActiveField {
-    constructor(
-        public item: {
-            en: string;
-            de: string;
-            [locale: string]: string;
-        },
-        public to: string,
-        public children: MenuItemWithActiveField[] | [],
-        public partlyActive: boolean,
-        public active: boolean
-    ) {}
+    item: {
+        en: string;
+        de: string;
+        [locale: string]: string;
+    } = { en: '', de: '' };
+    to: string = '';
+    children?: MenuItemWithActiveField[];
+    partlyActive: boolean = false;
+    active: boolean = false;
 }
 
-const returnEmptyMenuItemsWithActiveField = () => {
-    return new MenuItemWithActiveField(
-        { en: '', de: '' },
-        '',
-        [],
-        false,
-        false
-    );
-};
+// class MenuItemWithActiveField {
+//     constructor(
+//         public item: {
+//             en: string;
+//             de: string;
+//             [locale: string]: string;
+//         },
+//         public to: string,
+//         public children: MenuItemWithActiveField[] | [],
+//         public partlyActive: boolean,
+//         public active: boolean
+//     ) {}
+// }
+
+// const returnEmptyMenuItemsWithActiveField = () => {
+//     return new MenuItemWithActiveField(
+//         { en: '', de: '' },
+//         '',
+//         [],
+//         false,
+//         false
+//     );
+// };
 
 class NavListItem extends React.Component<
     {
@@ -84,7 +96,7 @@ class NavListItem extends React.Component<
                 className={`${menuItem.active ? 'active' : ''} ${
                     menuItem.partlyActive ? 'partlyActive' : ''
                 } ${this.state.isHovered ? 'onHover' : ''} ${
-                    menuItem.children.length > 0 ? 'hasSubList' : ''
+                    menuItem.children ? 'hasSubList' : ''
                 }`}
                 onMouseOver={this.onMouseOver}
                 onMouseOut={this.onMouseOut}>
@@ -93,7 +105,7 @@ class NavListItem extends React.Component<
                         activeLocale === primaryLocale ? '' : '/' + activeLocale
                     }${menuItem.to}`}>
                     {menuItem.item[activeLocale]}
-                    {menuItem.children.length > 0 && (
+                    {menuItem.children && (
                         <DropdownCarret
                             active={
                                 this.state.isHovered || menuItem.partlyActive
@@ -101,7 +113,7 @@ class NavListItem extends React.Component<
                         />
                     )}
                 </Link>
-                {menuItem.children.length > 0 && (
+                {menuItem.children && (
                     <NavList
                         menuItemsWithActiveField={menuItem.children}
                         activeLocale={activeLocale}
@@ -173,7 +185,7 @@ const checkforActivePaths = (
                 break;
             }
 
-            if (menuItem.children.length > 0) {
+            if (menuItem.children) {
                 recurseOver(menuItem.children);
             }
 
@@ -198,17 +210,15 @@ const addActiveFields = (
         newItems: MenuItemWithActiveField[]
     ) => {
         for (let key in oldItems) {
-            newItems[key] = returnEmptyMenuItemsWithActiveField();
+            newItems[key] = new MenuItemWithActiveField();
             newItems[key].item = oldItems[key].item;
             newItems[key].to = oldItems[key].to;
-            newItems[key].children = [];
-            newItems[key].partlyActive = false;
-            newItems[key].active = false;
 
             if (oldItems[key].children) {
+                newItems[key].children = [];
                 recurseOver(
                     oldItems[key].children as IMenuItem[],
-                    newItems[key].children
+                    newItems[key].children as MenuItemWithActiveField[]
                 );
             }
         }
