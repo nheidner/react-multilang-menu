@@ -1,15 +1,6 @@
 import React, { FC, ReactElement, ReactNode } from 'react';
-import matchPaths from './matchPaths';
-
-export interface IMenuItem {
-    item: {
-        en: string;
-        de: string;
-        [locale: string]: string;
-    };
-    to: string;
-    children?: IMenuItem[];
-}
+import { addActiveFields, checkforActivePaths, isHash } from './utils';
+import { MenuItemWithActiveField, IMenuItem } from './types';
 
 export interface ILink {
     (props: {
@@ -20,42 +11,6 @@ export interface ILink {
 }
 
 export type IDropdownCarret = FC<{ active: boolean }>;
-
-class MenuItemWithActiveField {
-    item: {
-        en: string;
-        de: string;
-        [locale: string]: string;
-    } = { en: '', de: '' };
-    to: string = '';
-    children?: MenuItemWithActiveField[];
-    partlyActive: boolean = false;
-    active: boolean = false;
-}
-
-// class MenuItemWithActiveField {
-//     constructor(
-//         public item: {
-//             en: string;
-//             de: string;
-//             [locale: string]: string;
-//         },
-//         public to: string,
-//         public children: MenuItemWithActiveField[] | [],
-//         public partlyActive: boolean,
-//         public active: boolean
-//     ) {}
-// }
-
-// const returnEmptyMenuItemsWithActiveField = () => {
-//     return new MenuItemWithActiveField(
-//         { en: '', de: '' },
-//         '',
-//         [],
-//         false,
-//         false
-//     );
-// };
 
 class NavListItem extends React.Component<
     {
@@ -102,7 +57,9 @@ class NavListItem extends React.Component<
                 onMouseOut={this.onMouseOut}>
                 <Link
                     to={`${
-                        activeLocale === primaryLocale ? '' : '/' + activeLocale
+                        activeLocale === primaryLocale || isHash(menuItem.to)
+                            ? ''
+                            : '/' + activeLocale
                     }${menuItem.to}`}>
                     {menuItem.item[activeLocale]}
                     {menuItem.children && (
@@ -169,63 +126,6 @@ const NavList: FC<{
             })}
         </ul>
     );
-};
-
-const checkforActivePaths = (
-    menuItems: MenuItemWithActiveField[],
-    activePathWithoutLocale: string
-): { menuItemsWithActivePaths: MenuItemWithActiveField[] } => {
-    let active = false;
-
-    const recurseOver = (menuItems: MenuItemWithActiveField[]) => {
-        for (let menuItem of menuItems) {
-            if (matchPaths(activePathWithoutLocale, menuItem.to)) {
-                menuItem.active = true;
-                active = true;
-                break;
-            }
-
-            if (menuItem.children) {
-                recurseOver(menuItem.children);
-            }
-
-            if (active) {
-                menuItem.partlyActive = true;
-                break;
-            }
-        }
-    };
-
-    recurseOver(menuItems);
-    return { menuItemsWithActivePaths: menuItems };
-};
-
-const addActiveFields = (
-    menuItems: IMenuItem[]
-): { menuItemsWithActiveField: MenuItemWithActiveField[] } => {
-    let menuItemsWithActiveField: MenuItemWithActiveField[] = [];
-
-    const recurseOver = (
-        oldItems: IMenuItem[],
-        newItems: MenuItemWithActiveField[]
-    ) => {
-        for (let key in oldItems) {
-            newItems[key] = new MenuItemWithActiveField();
-            newItems[key].item = oldItems[key].item;
-            newItems[key].to = oldItems[key].to;
-
-            if (oldItems[key].children) {
-                newItems[key].children = [];
-                recurseOver(
-                    oldItems[key].children as IMenuItem[],
-                    newItems[key].children as MenuItemWithActiveField[]
-                );
-            }
-        }
-    };
-
-    recurseOver(menuItems, menuItemsWithActiveField);
-    return { menuItemsWithActiveField };
 };
 
 const Menu: FC<{
